@@ -7,12 +7,13 @@ logger = logging.getLogger(__name__)
 
 
 def get_logfile_metrics(agent):
+
     def follow(thefile, run_event):
         thefile.seek(0, 2)
         while run_event.is_set():
             line = thefile.readline()
             if not line:
-                time.sleep(0.1)
+                time.sleep(config['frequency'])
                 continue
             yield line
 
@@ -40,21 +41,19 @@ def get_logfile_metrics(agent):
             }
 
             logger.debug('-'*90)
-            res = re.match(config['parser']['regex'], line).groups()
+            log_line = re.match(config['parser']['regex'], line).groups()
 
             for elem in config['parser']['mapping']:
                 dict_to_fill = None
-                if elem['type'] == 'field':
-                    dict_to_fill = point['fields']
-                else:
-                    dict_to_fill = point['tags']
-                value = res[elem['idx']]
+                dict_to_fill = point['fields'] \
+                    if elem['type'] == 'field' else point['tags']
+                value = log_line[elem['idx']]
                 if 'cast' in elem:
                     if elem['cast'] == 'int':
                         value = int(value)
                 dict_to_fill[elem['name']] = value
             logger.debug(point)
             logger.debug('-'*90)
-            agent.push([point], config['dbname'])
+            agent.push([point], db_config['name'])
 
     logger.info('get_logfile_metrics terminated')
