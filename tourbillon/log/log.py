@@ -27,7 +27,7 @@ def get_logfile_metrics(agent):
                                       db_config['duration'],
                                       db_config['replication'],
                                       db_config['name'])
-        logger.info('database "%s" created successfully', config['name'])
+        logger.info('database "%s" created successfully', db_config['name'])
     except:
         pass
 
