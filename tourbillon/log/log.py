@@ -20,17 +20,7 @@ def get_logfile_metrics(agent):
     agent.run_event.wait()
     config = agent.pluginconfig['log']
     db_config = config['database']
-    try:
-        logger.debug('try to create the database...')
-
-        agent.create_database(db_config['name'])
-        agent.create_retention_policy('%s_rp' % db_config['name'],
-                                      db_config['duration'],
-                                      db_config['replication'],
-                                      db_config['name'])
-        logger.info('database "%s" created successfully', db_config['name'])
-    except:
-        pass
+    yield from agent.create_database(**db_config)
 
     with open(config['log_file'], 'r') as f:
         for line in follow(f, agent.run_event):
