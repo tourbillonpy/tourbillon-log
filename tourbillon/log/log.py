@@ -20,7 +20,7 @@ def get_logfile_metrics(agent):
     agent.run_event.wait()
     config = agent.pluginconfig['log']
     db_config = config['database']
-    yield from agent.create_database(**db_config)
+    agent.create_database(**db_config)
 
     with open(config['log_file'], 'r') as f:
         for line in follow(f, agent.run_event):
@@ -30,7 +30,7 @@ def get_logfile_metrics(agent):
                 'fields': dict()
             }
 
-            logger.debug('-'*90)
+            logger.debug('-' * 90)
             log_line = re.match(config['parser']['regex'], line).groups()
 
             for elem in config['parser']['mapping']:
@@ -43,7 +43,7 @@ def get_logfile_metrics(agent):
                         value = int(value)
                 dict_to_fill[elem['name']] = value
             logger.debug(point)
-            logger.debug('-'*90)
+            logger.debug('-' * 90)
             agent.push([point], db_config['name'])
 
     logger.info('get_logfile_metrics terminated')
