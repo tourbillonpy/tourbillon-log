@@ -18,7 +18,7 @@ def get_logfile_metrics(agent):
             yield line
 
     agent.run_event.wait()
-    config = agent.pluginconfig['log']
+    config = agent.config['log']
     db_config = config['database']
     agent.create_database(**db_config)
 
