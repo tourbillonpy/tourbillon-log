@@ -41,6 +41,8 @@ def get_logfile_metrics(agent):
                 if 'cast' in elem:
                     if elem['cast'] == 'int':
                         value = int(value)
+                    elif elem['cast'] == 'float':
+                        value = float(value)
                 dict_to_fill[elem['name']] = value
             logger.debug(point)
             logger.debug('-' * 90)
