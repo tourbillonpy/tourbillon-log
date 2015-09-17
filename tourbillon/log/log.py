@@ -24,31 +24,34 @@ def get_logfile_metrics(agent):
 
     with open(config['log_file'], 'r') as f:
         for line in follow(f, agent.run_event):
-            point = {
-                'measurement': config['measurement'],
-                'tags': dict(),
-                'fields': dict()
-            }
+            try:
+                point = {
+                    'measurement': config['measurement'],
+                    'tags': dict(),
+                    'fields': dict()
+                }
 
-            logger.debug('-' * 90)
-            log_line = re.match(config['parser']['regex'], line).groups()
+                logger.debug('-' * 90)
+                log_line = re.match(config['parser']['regex'], line).groups()
 
-            for elem in config['parser']['mapping']:
-                dict_to_fill = None
-                dict_to_fill = point['fields'] \
-                    if elem['type'] == 'field' else point['tags']
-                if 'value' in elem:
-                    dict_to_fill[elem['name']] = elem['value']
-                    continue
-                value = log_line[elem['idx']]
-                if 'cast' in elem:
-                    if elem['cast'] == 'int':
-                        value = int(value)
-                    elif elem['cast'] == 'float':
-                        value = float(value)
-                dict_to_fill[elem['name']] = value
-            logger.debug(point)
-            logger.debug('-' * 90)
-            agent.push([point], db_config['name'])
+                for elem in config['parser']['mapping']:
+                    dict_to_fill = None
+                    dict_to_fill = point['fields'] \
+                        if elem['type'] == 'field' else point['tags']
+                    if 'value' in elem:
+                        dict_to_fill[elem['name']] = elem['value']
+                        continue
+                    value = log_line[elem['idx']]
+                    if 'cast' in elem:
+                        if elem['cast'] == 'int':
+                            value = int(value)
+                        elif elem['cast'] == 'float':
+                            value = float(value)
+                    dict_to_fill[elem['name']] = value
+                logger.debug(point)
+                logger.debug('-' * 90)
+                agent.push([point], db_config['name'])
+            except:
+                logger.exception('cannot parse log line %s', line)
 
     logger.info('get_logfile_metrics terminated')
