@@ -49,10 +49,16 @@ def get_logfile_metrics(agent):
                             dict_to_fill = None
                             dict_to_fill = point['fields'] \
                                 if elem['type'] == 'field' else point['tags']
+                            if 'value' in elem:
+                                dict_to_fill[elem['name']] = elem['value']
+                                continue
                             value = log_line[elem['idx']]
                             if 'cast' in elem:
                                 if elem['cast'] == 'int':
                                     value = int(value)
+                                elif elem['cast'] == 'float':
+                                    value = float(value)
+
                             dict_to_fill[elem['name']] = value
                         self.agent.push([point], self.db_config['name'])
                     except:
