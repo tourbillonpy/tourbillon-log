@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 setup(
     name='tourbillon-log',
     description='A tourbillon plugin for collecting metrics from a log file.',
-    version='0.4',
+    version='0.4.1',
     packages=find_packages(),
     zip_safe=False,
     install_requires=['watchdog==0.8.3'],
